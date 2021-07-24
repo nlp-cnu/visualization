@@ -41,27 +41,3 @@ class Node:
     def __repr__(self):
         return "ID: {}, Width: {}, C1: {}, C2: {}".format(self.id, self.parent_edge_width, self.c1,
                                                           self.c2)
-
-
-class Edge:
-
-    def __init__(self, parent, child, width=None):
-        self.parent = parent
-        self.child = child
-        self.width = width
-
-    def set_width(self, width):
-        self.width = width
-
-    def get_parent(self):
-        return self.parent
-
-    def get_child(self):
-        return self.child
-
-    def get_width(self):
-        return self.width
-
-    def __repr__(self):
-        return "filled"
-        # return "Parent: {}, Child: {}, Width: {}".format(self.parent, self.child, self.width)

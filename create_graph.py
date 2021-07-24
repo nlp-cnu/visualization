@@ -1,5 +1,5 @@
 import py4cytoscape as p4c
-import node_edge as ne
+import node as ne
 import numpy as np
 import pandas as pd
 import codecs
@@ -70,17 +70,15 @@ def clean_data(project_name):
 
     # separating size from UMLS information
     sizes = []
-    ifs = []
-    max_size = find_max(nodes['size'])
+    umls_info = []
 
     for i in nodes['size']:
         sep = i.split(':')
-        sizes.append(int(sep[0])/max_size)  # for percentage scaling
-        # sizes.append(np.log(int(sep[0]) + 1) ** 2)  # for log scaling
-        ifs.append(sep[1])
+        sizes.append(int(sep[0]))  # adding the size of node -> if scale, enter scale factor here
+        umls_info.append(sep[1])
 
     nodes['size'] = pd.Series(sizes)
-    nodes['info'] = pd.Series(ifs)
+    nodes['info'] = pd.Series(umls_info)
     nodes = nodes.sort_values('size')
 
     # for node size, order scaling
@@ -91,7 +89,6 @@ def clean_data(project_name):
     #     count += 1
     # print(nsize)
     # nodes['size'] = pd.Series(nsize)
-
 
     nodes = nodes.sort_values('id')
 
@@ -120,32 +117,35 @@ def width_recurse(node):
         node.set_parent_edge_width(node.get_weight())
         return node.get_weight()
     elif node.get_c2() is None:
-        num = width_recurse(node.get_c1().get_child())
+        num = width_recurse(node.get_c1())
         node.set_parent_edge_width(num)
         return num
     else:
-        num = width_recurse(node.get_c1().get_child()) + width_recurse(node.get_c2().get_child())
+        num = width_recurse(node.get_c1()) + width_recurse(node.get_c2())
         node.set_parent_edge_width(num)
         return num
 
 
 def edge_color_recurse(node):
+    color1 = '#0000FF'
+    color2 = '#FFA500'
+    color3 = '#FFC0CB'
     if node is None or (node.get_c1() is None and node.get_c2() is None):
         return 0
     elif node.get_c2() is None:
-        node.get_c1().get_child().set_parent_edge_color('#0000FF')
+        node.get_c1().set_parent_edge_color(color1)
     else:
-        if node.get_c1().get_child().get_parent_edge_width() > node.get_c2().get_child().get_parent_edge_width():
-            node.get_c1().get_child().set_parent_edge_color('#0000FF')
-            node.get_c2().get_child().set_parent_edge_color('#FFA500')
-        elif node.get_c1().get_child().get_parent_edge_width() < node.get_c2().get_child().get_parent_edge_width():
-            node.get_c2().get_child().set_parent_edge_color('#0000FF')
-            node.get_c1().get_child().set_parent_edge_color('#FFA500')
+        if node.get_c1().get_parent_edge_width() > node.get_c2().get_parent_edge_width():
+            node.get_c1().set_parent_edge_color(color1)
+            node.get_c2().set_parent_edge_color(color2)
+        elif node.get_c1().get_parent_edge_width() < node.get_c2().get_parent_edge_width():
+            node.get_c2().set_parent_edge_color(color1)
+            node.get_c1().set_parent_edge_color(color2)
         else:
-            node.get_c1().get_child().set_parent_edge_color('#FFC0CB')
-            node.get_c2().get_child().set_parent_edge_color('#FFC0CB')
-        edge_color_recurse(node.get_c1().get_child())
-        edge_color_recurse(node.get_c2().get_child())
+            node.get_c1().set_parent_edge_color(color3)
+            node.get_c2().set_parent_edge_color(color3)
+        edge_color_recurse(node.get_c1())
+        edge_color_recurse(node.get_c2())
 
 
 def create_width(project_name):
@@ -162,18 +162,15 @@ def create_width(project_name):
     source = edges['source'].tolist()
     target = edges['target'].tolist()
 
-    all_edges = []
     for i in range(len(source)):
         if source[i] in all_nodes.keys() and target[i] in all_nodes.keys():
-            edge = ne.Edge(all_nodes[source[i]], all_nodes[target[i]])
-            all_edges.append(edge)
             if all_nodes[source[i]].get_c1() is None:
-                all_nodes[source[i]].set_c1(edge)
+                all_nodes[source[i]].set_c1(all_nodes[target[i]])
             else:
-                all_nodes[source[i]].set_c2(edge)
+                all_nodes[source[i]].set_c2(all_nodes[target[i]])
         else:
             quit("Source or target node not defined")
-    width_recurse(all_nodes[len(id)-1])
+    width_recurse(all_nodes[len(id) - 1])
     edge_widths = []
     for i in all_nodes.values():
         edge_widths.append(i.get_parent_edge_width())
@@ -181,7 +178,7 @@ def create_width(project_name):
     edges = edges.sort_values('target')
     edges['width'] = edge_widths[:-1]
 
-    edge_color_recurse(all_nodes[len(id)-1])
+    edge_color_recurse(all_nodes[len(id) - 1])
     colors = []
     for i in all_nodes.values():
         colors.append(i.get_parent_edge_color())
