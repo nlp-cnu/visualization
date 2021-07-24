@@ -127,9 +127,9 @@ def width_recurse(node):
 
 
 def edge_color_recurse(node):
-    color1 = '#0000FF'
-    color2 = '#FFA500'
-    color3 = '#FFC0CB'
+    color1 = '#0000FF'  # more interesting color
+    color2 = '#FFA500'  # least interesting color
+    color3 = '#FFC0CB'  # widths are the same
     if node is None or (node.get_c1() is None and node.get_c2() is None):
         return 0
     elif node.get_c2() is None:
@@ -173,16 +173,24 @@ def create_width(project_name):
     width_recurse(all_nodes[len(id) - 1])
     edge_widths = []
     for i in all_nodes.values():
-        edge_widths.append(i.get_parent_edge_width())
+        edge_widths.append(i.get_parent_edge_width() / 10)
         # edge_widths.append(np.log(i.get_parent_edge_width()))
+
     edges = edges.sort_values('target')
     edges['width'] = edge_widths[:-1]
 
     edge_color_recurse(all_nodes[len(id) - 1])
     colors = []
     for i in all_nodes.values():
+        print(i)
         colors.append(i.get_parent_edge_color())
     edges['color'] = colors[:-1]
+
+    names = []
+    for i in range(len(edges)):
+        names.append(str(edges['source'][i]) + ' (interacts with) ' + str(edges['target'][i]))
+    edges = edges.sort_values('source')
+    edges['name'] = names
     edges.to_csv(project_name + '_edges.csv')
 
 
@@ -209,8 +217,8 @@ def graph_to_cyto(project_name):
     p4c.set_node_color_default('#00FF00')
     p4c.set_node_size_mapping('id', nodes['id'].tolist(), nodes['size'].tolist(), mapping_type='d')
     p4c.set_node_font_size_mapping('name', nodes['name'].tolist(), nodes['font'].tolist(), mapping_type='d')
-    p4c.set_edge_line_width_bypass(p4c.get_all_edges(), edges['width'].tolist())
-    p4c.set_edge_color_bypass(p4c.get_all_edges(), edges['color'].tolist())
+    p4c.set_edge_line_width_bypass(edges['name'].tolist(), edges['width'].tolist())
+    p4c.set_edge_color_bypass(edges['name'].tolist(), edges['color'].tolist())
     p4c.set_node_shape_bypass(['root'], 'HEXAGON')
     p4c.set_node_color_bypass(['root'], '#FF0000')
 
@@ -223,11 +231,11 @@ def graph_to_cyto(project_name):
 
 
 if __name__ == "__main__":
-    # project = input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDise"
-    #                 "ases): ")
+    # project = input("Please enter the name of your files without the extension, case sensitive. (ex -
+    # cardiacArrestDiseases): ")
     project = "1983_1985_window8_v"
     clusters_to_csv(project)
     tree_to_txt(project)
     clean_data(project)
     create_width(project)
-    graph_to_cyto(project)
+    # graph_to_cyto(project)
