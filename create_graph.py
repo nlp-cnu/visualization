@@ -47,18 +47,6 @@ def clusters_to_csv(clusters):
     os.remove('dump.txt')
 
 
-def find_max(sizes):
-    """
-    finds max of all node sizes, used in percentage scaling
-    :param sizes: must be list of node sizes
-    :return: max
-    """
-    size_list = []
-    for i in sizes:
-        size_list.append(int(i.split(":")[0]))
-    return max(size_list)
-
-
 def clean_data(project_name):
     """
     cleans most of the data by removing useless information and separating other information for ease of sizing
@@ -79,17 +67,6 @@ def clean_data(project_name):
 
     nodes['size'] = pd.Series(sizes)
     nodes['info'] = pd.Series(umls_info)
-    nodes = nodes.sort_values('size')
-
-    # for node size, order scaling
-    # count = 1
-    # nsize = nodes['size'].tolist()
-    # for i in range(len(nsize)):
-    #     nsize[i] = (count/len(nsize)) * 100
-    #     count += 1
-    # print(nsize)
-    # nodes['size'] = pd.Series(nsize)
-
     nodes = nodes.sort_values('id')
 
     # reading in the edges data frame
@@ -173,8 +150,7 @@ def create_width(project_name):
     width_recurse(all_nodes[len(id) - 1])
     edge_widths = []
     for i in all_nodes.values():
-        edge_widths.append(i.get_parent_edge_width() / 10)
-        # edge_widths.append(np.log(i.get_parent_edge_width()))
+        edge_widths.append(i.get_parent_edge_width() / 5)
 
     edges = edges.sort_values('target')
     edges['width'] = edge_widths[:-1]
@@ -182,7 +158,6 @@ def create_width(project_name):
     edge_color_recurse(all_nodes[len(id) - 1])
     colors = []
     for i in all_nodes.values():
-        print(i)
         colors.append(i.get_parent_edge_color())
     edges['color'] = colors[:-1]
 
@@ -238,4 +213,4 @@ if __name__ == "__main__":
     tree_to_txt(project)
     clean_data(project)
     create_width(project)
-    # graph_to_cyto(project)
+    graph_to_cyto(project)
