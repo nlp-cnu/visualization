@@ -1,6 +1,5 @@
 import py4cytoscape as p4c
 import node as ne
-import numpy as np
 import pandas as pd
 import codecs
 import time
@@ -63,7 +62,7 @@ def clean_data(project_name):
     for i in nodes['size']:
         sep = i.split(':')
         sizes.append(int(sep[0]))  # adding the size of node -> if scale, enter scale factor here
-        umls_info.append(sep[1])
+        umls_info.append(sep[1])  # UMLS associated information, example: C0016762
 
     nodes['size'] = pd.Series(sizes)
     nodes['info'] = pd.Series(umls_info)
@@ -72,95 +71,108 @@ def clean_data(project_name):
     # reading in the edges data frame
     edges = pd.read_csv(project_name + '_edges.csv', delimiter=' ', names=['source', 'n1', 'n2'])
     edges['target'] = edges.index  # adding index as an actual column
+
     # deleting useless information
     del edges['n1']
     del edges['n2']
     edges = edges[:-1]
     edges = edges.sort_values('source')
 
+    # writing back into csv files to edit in other methods
     nodes.to_csv(project_name + '_nodes.csv')
     edges.to_csv(project_name + '_edges.csv')
 
 
 def width_recurse(node):
     """
-
-    :param node:
-    :return:
+    traverses through a given node and creates edge weights for each edge -> edge size is sum of leaf nodes below
+    :param node: given node object
+    :return: no actual return - modifies actual tree
     """
-    if node is None:
+    if node is None:  # base case
         return 0
-    elif node.get_c1() is None and node.get_c2() is None:
+    elif node.get_c1() is None and node.get_c2() is None:  # if node is a leaf node
         node.set_parent_edge_width(node.get_weight())
         return node.get_weight()
-    elif node.get_c2() is None:
+    elif node.get_c2() is None:  # if there is only one children
         num = width_recurse(node.get_c1())
         node.set_parent_edge_width(num)
         return num
-    else:
+    else:  # if there are two children
         num = width_recurse(node.get_c1()) + width_recurse(node.get_c2())
         node.set_parent_edge_width(num)
         return num
 
 
 def edge_color_recurse(node):
+    """
+
+    :param node:
+    :return:
+    """
     color1 = '#0000FF'  # more interesting color
     color2 = '#FFA500'  # least interesting color
     color3 = '#FFC0CB'  # widths are the same
-    if node is None or (node.get_c1() is None and node.get_c2() is None):
+    if node is None or (node.get_c1() is None and node.get_c2() is None):  # base case, if not node or leaf node
         return 0
-    elif node.get_c2() is None:
+    elif node.get_c2() is None:  # if only one children, that should be the most interesting route
         node.get_c1().set_parent_edge_color(color1)
     else:
-        if node.get_c1().get_parent_edge_width() > node.get_c2().get_parent_edge_width():
+        if node.get_c1().get_parent_edge_width() > node.get_c2().get_parent_edge_width():  # C1 more interesting than C2
             node.get_c1().set_parent_edge_color(color1)
             node.get_c2().set_parent_edge_color(color2)
-        elif node.get_c1().get_parent_edge_width() < node.get_c2().get_parent_edge_width():
+        elif node.get_c1().get_parent_edge_width() < node.get_c2().get_parent_edge_width():  # C2 > C1 in interest
             node.get_c2().set_parent_edge_color(color1)
             node.get_c1().set_parent_edge_color(color2)
-        else:
+        else:  # otherwise, if they are the same, give them their own color
             node.get_c1().set_parent_edge_color(color3)
             node.get_c2().set_parent_edge_color(color3)
+        # continue recursion
         edge_color_recurse(node.get_c1())
         edge_color_recurse(node.get_c2())
 
 
 def create_width(project_name):
+    # open files
     nodes = pd.read_csv(project_name + '_nodes.csv')
     edges = pd.read_csv(project_name + '_edges.csv')
 
-    id = nodes['id'].tolist()
+    node_id = nodes['id'].tolist()
     size = nodes['size'].tolist()
 
     all_nodes = {}  # make dict of all nodes, key is ID # and value is the actual node object
-    for i in range(len(id)):
-        all_nodes[id[i]] = (ne.Node(id[i], size[i]))
+    for i in range(len(node_id)):
+        all_nodes[node_id[i]] = (ne.Node(node_id[i], size[i]))
 
     source = edges['source'].tolist()
     target = edges['target'].tolist()
 
+    # linking all nodes to each other
     for i in range(len(source)):
-        if source[i] in all_nodes.keys() and target[i] in all_nodes.keys():
-            if all_nodes[source[i]].get_c1() is None:
+        if source[i] in all_nodes.keys() and target[i] in all_nodes.keys():  # verifying node is defined
+            if all_nodes[source[i]].get_c1() is None:  # if a child has not been set, set as first
                 all_nodes[source[i]].set_c1(all_nodes[target[i]])
-            else:
+            else:  # otherwise set as second child
                 all_nodes[source[i]].set_c2(all_nodes[target[i]])
         else:
             quit("Source or target node not defined")
-    width_recurse(all_nodes[len(id) - 1])
+
+    # edge width section
+    width_recurse(all_nodes[len(node_id) - 1])  # recurse through entire tree
     edge_widths = []
     for i in all_nodes.values():
-        edge_widths.append(i.get_parent_edge_width() / 5)
-
+        edge_widths.append(i.get_parent_edge_width() / 5)  # appending edge weight -> scale factor here
     edges = edges.sort_values('target')
-    edges['width'] = edge_widths[:-1]
+    edges['width'] = edge_widths[:-1]  # removing unnecessary data
 
-    edge_color_recurse(all_nodes[len(id) - 1])
+    # edge color section
+    edge_color_recurse(all_nodes[len(node_id) - 1])  # recurse through entire tree
     colors = []
     for i in all_nodes.values():
         colors.append(i.get_parent_edge_color())
     edges['color'] = colors[:-1]
 
+    # edge name section
     names = []
     for i in range(len(edges)):
         names.append(str(edges['source'][i]) + ' (interacts with) ' + str(edges['target'][i]))
@@ -169,48 +181,47 @@ def create_width(project_name):
     edges.to_csv(project_name + '_edges.csv')
 
 
-def graph_to_cyto(project_name):
+def graph_to_cytoscape(project_name):
     """
 
     :param project_name:
     :return:
     """
-    start = time.time()
+    start = time.time()  # tracking time for user purposes
 
     nodes = pd.read_csv(project_name + '_nodes.csv')
     edges = pd.read_csv(project_name + '_edges.csv')
 
     nodes['id'] = nodes.id.astype(str)
-    nodes['font'] = nodes['size'].map(lambda x: x / 3)
-    nodes.at[len(nodes['id'].tolist()) - 1, 'name'] = 'root'
+    nodes['font'] = nodes['size'].map(lambda x: x / 3)  # adding font sizes -> scale factor here
+    nodes.at[len(nodes['id'].tolist()) - 1, 'name'] = 'root'  # change name of root for clearness
 
+    # must be strings for cytoscape to read them in
     edges['source'] = edges['source'].astype(str)
     edges['target'] = edges['target'].astype(str)
 
     p4c.create_network_from_data_frames(nodes, edges, title="lbd_test", collection="tests")
-    p4c.set_node_shape_default('ELLIPSE')
-    p4c.set_node_color_default('#00FF00')
+    p4c.set_node_shape_default('ELLIPSE')  # default shape of ALL nodes - except root
+    p4c.set_node_color_default('#00FF00')  # color should NOT appear
     p4c.set_node_size_mapping('id', nodes['id'].tolist(), nodes['size'].tolist(), mapping_type='d')
     p4c.set_node_font_size_mapping('name', nodes['name'].tolist(), nodes['font'].tolist(), mapping_type='d')
     p4c.set_edge_line_width_bypass(edges['name'].tolist(), edges['width'].tolist())
     p4c.set_edge_color_bypass(edges['name'].tolist(), edges['color'].tolist())
-    p4c.set_node_shape_bypass(['root'], 'HEXAGON')
-    p4c.set_node_color_bypass(['root'], '#FF0000')
+    p4c.set_node_shape_bypass(['root'], 'HEXAGON')  # root becomes hexagon
+    p4c.set_node_color_bypass(['root'], '#FF0000')  # root becomes red
 
-    end = time.time()
+    end = time.time()  # end timer
 
-    nodes.to_csv('x.csv')
-    edges.to_csv('y.csv')
+    # timer information
     print("time taken in seconds:", end - start)
     print("time in minutes:", (end - start) / 60)
 
 
 if __name__ == "__main__":
-    # project = input("Please enter the name of your files without the extension, case sensitive. (ex -
-    # cardiacArrestDiseases): ")
-    project = "1983_1985_window8_v"
+    project = input("Please enter the name of your files without the extension, case sensitive. (ex -"
+                    "cardiacArrestDiseases): ")
     clusters_to_csv(project)
     tree_to_txt(project)
     clean_data(project)
     create_width(project)
-    graph_to_cyto(project)
+    graph_to_cytoscape(project)
