@@ -32,7 +32,7 @@ def clusters_to_csv(clusters):
     """
     block_size = 1048576
     with codecs.open(clusters + '.clusters', "r", "windows-1252") as sourceFile:
-        with codecs.open('dump.txt', "w", "utf-8") as targetFile:
+        with codecs.open('data/dump.txt', "w", "utf-8") as targetFile:
             while True:
                 contents = sourceFile.read(block_size)
                 if not contents:
@@ -40,14 +40,14 @@ def clusters_to_csv(clusters):
                 targetFile.write(contents)
         targetFile.close()
 
-    with open('dump.txt') as file:
+    with open('data/dump.txt') as file:
         wrt = open(clusters + '_nodes.csv', 'w')
         for i in file:
             split_list = re.findall(r"(\d+) - (.*) - (\d+: .*)", i)[0]
             wrt.write(split_list[0] + "\t" + split_list[1] + "\t" + split_list[2] + "\n")
         wrt.close()
 
-    os.remove('dump.txt')
+    os.remove('data/dump.txt')
 
 
 def clean_data(project_name):
@@ -222,10 +222,12 @@ def graph_to_cytoscape(project_name):
 
 
 if __name__ == "__main__":
-    project = input("Please enter the name of your files without the extension, case sensitive. (ex -"
-                    "cardiacArrestDiseases): ")
+    project = 'data/' + input("Please enter the name of your files without the extension, case sensitive. (ex -"
+                              "cardiacArrestDiseases): ")
+    print('Processing...')
     clusters_to_csv(project)
     tree_to_txt(project)
     clean_data(project)
     create_width(project)
+    print('Graphing...')
     graph_to_cytoscape(project)
