@@ -1,3 +1,7 @@
+"""
+@author Rafael Diaz
+@date 07/26/2021
+"""
 import py4cytoscape as p4c
 import node as ne
 import pandas as pd
