@@ -1,7 +1,3 @@
-py4cytoscape
-numpy
 pandas
-codecs
-time
-re
-os
+chardet
+py4cytoscape
