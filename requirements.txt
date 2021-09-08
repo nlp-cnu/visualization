@@ -1,3 +1,8 @@
 pandas
 chardet
+python-igraph
+requests
+networkx
+colorbrewer
+decorator
 py4cytoscape
