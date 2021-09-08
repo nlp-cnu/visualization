@@ -13,7 +13,7 @@ import os
 
 def tree_to_txt(tree):
     """
-    converts .tree to .txt with " " delimiter
+     **converts .tree to .txt with " " delimiter
     :param tree: name of the file with no extension, MUST BE A ".tree" file
     :return: none -> creates new file
     """
