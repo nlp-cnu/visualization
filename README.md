@@ -12,20 +12,26 @@ Once the graph has been created, head over to the layout tab and experiment with
 Click and drag through the graph at your pleasure and explore at your leisure
 
 ## Instructions for user data:
+TODO - this format is overly complex, and specific to the original clustering algorithm and implementation. It should be a .node and a .edge file. Nodes should be able to have any ID, and the edge file should just contain node-node pairs to specify edges - probably also a weight to go along with the edge.
+
 **1.** Verify you have the correct data from the LBD system - this is a: ".tree" and a ".clusters" file with the same name.  
+   The structure of the tree is specified in a .tree and a .clusters file. The .tree file contains ege information and the .clusters file contains node information. Assign each node a unique ID between 0 and the number of nodes. Then, create the .tree and .clusters files as described below:
+
    The .tree file should be structured as the following... 
    
    >4957 0.000000e+00 0.000000e+00  
    >3888 0.000000e+00 0.000000e+00  
    >5062 0.000000e+00 0.000000e+00    
    
-   Where the index of the line is the child node.  
+   Where the line number indicates the current node, and the first value on the line indictes that node's parent. For example, if line 0 contains the value 4957, it indicates that node 0's parent is 4957. A value of -1 indicates no parent node.
   
    The .cluster file should be structured as the following...  
   
    >3049 - local anesthetic throat preparations - 549: C3540696, C3540789,  
    >1485 - Recombinant Lymphokine - 286: C1527201,   
    >4736 - Guanidines - 1315: C0120447, C0041942, C0120446, C0018320,  
+
+   Where, the first value indicates the ID of the node (0-number of nodes). The next value indicates the name of the node, the next value indictes the score of the node. This is followed by a list of values which indicates the contents of the node. In the case where a node represents a single concept, just a single value should appear after the colon.
   
  **2.** Open Cytoscape, must be open for graph to be created.  
  **3.** Run the create_graph.py and enter name of project files - both the tree and cluster file should have the same name.  
