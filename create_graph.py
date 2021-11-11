@@ -44,10 +44,6 @@ def clusters_to_csv(clusters):
         wrt = open(clusters + '_nodes.csv', 'w')
         for i in file:
             split_list = re.findall(r"(\d+) - (.*) - (\d+: .*)", i)[0]
-            #print ("split_list = ", split_list)
-            #print ("split_list = ", split_list[0])
-            #print ("split_list = ", split_list[1])
-            #print ("split_list = ", split_list[2])
             wrt.write(str(split_list[0]) + "\t" + str(split_list[1]) + "\t" + str(split_list[2]) + "\n")
         wrt.close()
 
