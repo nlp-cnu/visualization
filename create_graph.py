@@ -13,7 +13,7 @@ import os
 
 def tree_to_txt(tree):
     """
-    converts .tree to .txt with " " delimiter
+     **converts .tree to .txt with " " delimiter
     :param tree: name of the file with no extension, MUST BE A ".tree" file
     :return: none -> creates new file
     """
@@ -208,7 +208,7 @@ def graph_to_cytoscape(project_name):
     edges['source'] = edges['source'].astype(str)
     edges['target'] = edges['target'].astype(str)
 
-    p4c.create_network_from_data_frames(nodes, edges, title="lbd_test", collection="tests")
+    p4c.create_network_from_data_frames(nodes, edges, title=project_name, collection="Graphs")
     p4c.toggle_graphics_details()
     p4c.set_node_shape_default('ELLIPSE')  # default shape of ALL nodes - except root
     p4c.set_node_color_default('#00FF00')  # color should NOT appear
@@ -234,5 +234,5 @@ if __name__ == "__main__":
     tree_to_txt(project)
     clean_data(project)
     create_width(project)
-    print('Graphing...')
+    print('Graphing...\nThis may take a few minutes...')
     graph_to_cytoscape(project)
