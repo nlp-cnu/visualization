@@ -145,6 +145,7 @@ def create_width(project_name):
     size = nodes['size'].tolist()
 
     all_nodes = {}  # make dict of all nodes, key is ID # and value is the actual node object
+    #all_nodes[-1] = None
     for i in range(len(node_id)):
         all_nodes[node_id[i]] = (ne.Node(node_id[i], size[i]))
 
@@ -153,13 +154,20 @@ def create_width(project_name):
 
     # linking all nodes to each other
     for i in range(len(source)):
-        if source[i] in all_nodes.keys() and target[i] in all_nodes.keys():  # verifying node is defined
-            if all_nodes[source[i]].get_c1() is None:  # if a child has not been set, set as first
-                all_nodes[source[i]].set_c1(all_nodes[target[i]])
-            else:  # otherwise set as second child
-                all_nodes[source[i]].set_c2(all_nodes[target[i]])
+        print ("i = ", i)
+        print ("source[i] = ", source[i])
+        print ("target[i] = ", target[i])
+
+        if (source[i] == -1 or target[i] == -1):
+            pass
         else:
-            quit("Source or target node not defined")
+            if source[i] in all_nodes.keys() and target[i] in all_nodes.keys():  # verifying node is defined
+                if all_nodes[source[i]].get_c1() is None:  # if a child has not been set, set as first
+                    all_nodes[source[i]].set_c1(all_nodes[target[i]])
+                else:  # otherwise set as second child
+                    all_nodes[source[i]].set_c2(all_nodes[target[i]])
+            else:
+                quit("Source or target node not defined")
 
     # edge width section
     width_recurse(all_nodes[len(node_id) - 1])  # recurse through entire tree
