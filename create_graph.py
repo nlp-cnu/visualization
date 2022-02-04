@@ -148,15 +148,17 @@ def create_width(project_name):
     #all_nodes[-1] = None
     for i in range(len(node_id)):
         all_nodes[node_id[i]] = (ne.Node(node_id[i], size[i]))
-
+    # for key,value in all_nodes.items():
+    #     print(key, value)
     source = edges['source'].tolist()
     target = edges['target'].tolist()
-
+    print(source)
+    print(target)
     # linking all nodes to each other
     for i in range(len(source)):
-        print ("i = ", i)
-        print ("source[i] = ", source[i])
-        print ("target[i] = ", target[i])
+        # print ("i = ", i)
+        # print ("source[i] = ", source[i])
+        # print ("target[i] = ", target[i])
 
         if (source[i] == -1 or target[i] == -1):
             pass
@@ -203,7 +205,8 @@ def graph_to_cytoscape(project_name):
 
     nodes = pd.read_csv(project_name + '_nodes.csv')
     edges = pd.read_csv(project_name + '_edges.csv')
-
+    print(nodes)
+    print(edges)
     nodes['id'] = nodes.id.astype(str)
     nodes['font'] = nodes['size'].map(lambda x: 32767 if x / 3 > 32767 else x / 3)  # font sizes -> scale factor here
     nodes.at[len(nodes['id'].tolist()) - 1, 'name'] = 'root'  # change name of root for clearness
