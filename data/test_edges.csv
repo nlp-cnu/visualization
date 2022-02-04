@@ -1,0 +1,5 @@
+parent,child,width,color,name
+0,1,10,#FFC0CB,0 (interacts with) 1
+0,2,10,#FFC0CB,0 (interacts with) 2
+1,3,10,#FFC0CB,1 (interacts with) 3
+1,4,10,#FFC0CB,1 (interacts with) 4

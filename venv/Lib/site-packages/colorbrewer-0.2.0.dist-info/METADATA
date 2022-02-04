@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: colorbrewer
+Version: 0.2.0
+Summary: constants from Cynthia Brewer's ColorBrewer
+Home-page: http://noble.gs.washington.edu/~mmh1/software/colorbrewer/
+Author: Michael Hoffman
+Author-email: mmh1@uw.edu
+License: UNKNOWN
+Download-URL: http://noble.gs.washington.edu/~mmh1/software/colorbrewer/colorbrewer-0.2.0.tar.gz
+Platform: UNKNOWN
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Requires-Dist: six
+
+An easy way to get access to ColorBrewer schemes from within a Python program
+
+
