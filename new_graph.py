@@ -1,7 +1,7 @@
 import py4cytoscape as p4c
 import node as ne
 import pandas as pd
-import codecs
+#import codecs
 import time
 import re
 import os
@@ -20,7 +20,13 @@ def graph_to_cytoscape(project_name):
     nodes['id'] = nodes.id.astype(str)
     nodes['font'] = nodes['size'].map(lambda x: 32767 if x / 3 > 32767 else x / 3)  # font sizes -> scale factor here
     #nodes.at[len(nodes['id'].tolist()) - 1, 'name'] = 'root'  # change name of root for clearness
-    root = nodes.at[0, 'name']
+    counter = -1
+    root_index = 0
+    for node in nodes['size']:
+        counter += 1
+        if node == 1000:
+            root_index = counter
+    root = nodes.at[root_index, 'name']
     #nodes.at[0, 'name'] = 'root'  # change name of root for clearness
 
 
@@ -28,8 +34,6 @@ def graph_to_cytoscape(project_name):
     edges['source'] = edges['parent'].astype(str)
     edges['target'] = edges['child'].astype(str)
 
-    print(nodes)
-    print(edges)
 
     p4c.create_network_from_data_frames(nodes, edges, title=project_name, collection="Graphs")
     p4c.toggle_graphics_details()
@@ -53,5 +57,5 @@ def graph_to_cytoscape(project_name):
 if __name__ == "__main__":
     # project = 'data/' + input("Please enter the name of your files without the extension, case sensitive. (ex -"
     #                           "cardiacArrestDiseases): ")
-    project = 'data/test'
+    project = 'data/SNOMEDCT_US'
     graph_to_cytoscape(project)
