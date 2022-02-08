@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # AUIs = AUI, name, CUI, parent node, hierarchy, children, empty string (meant for descendants), ID
     AUIs = {}
 
-    with open(ontology_file) as f:
+    with open(ontology_file,encoding="utf-8") as f:
         ontology_lines = f.readlines()
         for line_num in range(len(ontology_lines)):
             ontology_lines[line_num] = ontology_lines[line_num].strip().split("|")
