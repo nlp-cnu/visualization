@@ -5,8 +5,8 @@ import new_graph
 if __name__ == '__main__':
     ontology = input("Please enter the ontology to graph: ")
 
-    ontology_file = os.path.join("data", ontology+".txt")
-    hierarchy_file = os.path.join("data", ontology+"_HIER.txt")
+    ontology_file = os.path.join("..","research_data" ,ontology+".txt")
+    hierarchy_file = os.path.join("..","research_data" , ontology+"_HIER.txt")
     # AUIs = AUI, name, CUI, parent node, hierarchy, children, empty string (meant for descendants), ID
     AUIs = {}
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     #print(AUIs['A1199224'])
     width = 100
     color = '#FFC0CB'
-    file = os.path.join("data", ontology+"_nodes.csv")
+    file = os.path.join("..", "research_data" ,ontology+"_nodes.csv")
     with open(file, "wt") as f:
         f.write("id,name,size,aui\n")
         for key, value in AUIs.items():
@@ -63,7 +63,7 @@ if __name__ == '__main__':
                 size = 2000/(math.sqrt( AUIs[key][-1]))
                 f.write("{},{},{},{}\n".format(AUIs[key][6],AUIs[key][1],int(size//1),key))
 
-    file = os.path.join("data", ontology+"_edges.csv")
+    file = os.path.join("..","research_data" , ontology+"_edges.csv")
     with open(file, "wt") as f:
         f.write("source,target,width,color,name\n")
         for key, value in AUIs.items():
