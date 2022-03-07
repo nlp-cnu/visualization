@@ -1,6 +1,5 @@
 import math
 import os
-import new_graph
 
 if __name__ == '__main__':
     ontology = input("Please enter the ontology to graph: ")
