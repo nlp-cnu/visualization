@@ -21,8 +21,18 @@ if __name__ == '__main__':
         hier_lines = f.readlines()
         for line_num in range(len(hier_lines)):
             hier_lines[line_num] = hier_lines[line_num].strip().split("|")
-            AUIs[hier_lines[line_num][1]].append(hier_lines[line_num][3])
-            AUIs[hier_lines[line_num][1]].append(hier_lines[line_num][6])
+            if(len(hier_lines[line_num][6]) > 1):
+                root_AUI = hier_lines[line_num][6].split(".")
+                root_AUI = root_AUI[0]
+            if hier_lines[line_num][1] != root_AUI and hier_lines[line_num][2] == '1':
+                AUIs[hier_lines[line_num][1]].append(hier_lines[line_num][3])
+                AUIs[hier_lines[line_num][1]].append(hier_lines[line_num][6])
+            elif hier_lines[line_num][1] == root_AUI:
+                if root_AUI in AUIs.keys():
+                    AUIs[hier_lines[line_num][1]].append(hier_lines[line_num][3])
+                    AUIs[hier_lines[line_num][1]].append(hier_lines[line_num][6])
+                else:
+                    AUIs[root_AUI] = [root_AUI, "root", "NONE", "", '']
 
     #Set IDs
     index = 0
@@ -42,7 +52,7 @@ if __name__ == '__main__':
                 root = key
             else:
                 AUIs[key].append(len(AUIs[key][4].split(".")) + 1)
-
+    #print(AUIs['A1199224'])
     width = 100
     color = '#FFC0CB'
     file = os.path.join("data", ontology+"_nodes.csv")
@@ -55,12 +65,15 @@ if __name__ == '__main__':
 
     file = os.path.join("data", ontology+"_edges.csv")
     with open(file, "wt") as f:
-        f.write("parent,child,width,color,name\n")
+        f.write("source,target,width,color,name\n")
         for key, value in AUIs.items():
             if len(AUIs[key]) > 3 and key != root:
                 parent = AUIs[AUIs[key][3]][6]
                 child = AUIs[key][6]
                 f.write("{},{},{},{},{} (interacts with) {}\n".format(parent, child, width, color,parent, child))
-
+            elif key == root:
+                parent = -1
+                child = AUIs[key][6]
+                f.write("{},{},{},{},{} (interacts with) {}\n".format(parent, child, width, color, parent, child))
     # project = 'data/' + ontology
     # new_graph.graph_to_cytoscape(project)

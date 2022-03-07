@@ -22,17 +22,24 @@ def graph_to_cytoscape(project_name):
     #nodes.at[len(nodes['id'].tolist()) - 1, 'name'] = 'root'  # change name of root for clearness
     counter = -1
     root_index = 0
-    for node in nodes['size']:
+    for s in edges['source']:
         counter += 1
-        if node == 1000:
+        if s == -1:
+            root_id = edges.target[counter]
+            edges = edges.drop(edges.index[counter])
+    counter = -1
+    for node in nodes['id']:
+        counter += 1
+        if node == root_id:
             root_index = counter
     root = nodes.at[root_index, 'name']
     #nodes.at[0, 'name'] = 'root'  # change name of root for clearness
 
 
+
     # must be strings for cytoscape to read them in
-    edges['source'] = edges['parent'].astype(str)
-    edges['target'] = edges['child'].astype(str)
+    edges['source'] = edges['source'].astype(str)
+    edges['target'] = edges['target'].astype(str)
 
 
     p4c.create_network_from_data_frames(nodes, edges, title=project_name, collection="Graphs")
@@ -55,7 +62,6 @@ def graph_to_cytoscape(project_name):
 
 
 if __name__ == "__main__":
-    # project = 'data/' + input("Please enter the name of your files without the extension, case sensitive. (ex -"
-    #                           "cardiacArrestDiseases): ")
-    project = 'data/SNOMEDCT_US'
+    project = 'data/' + input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases): ")
+    #project = 'data/SNOMEDCT_US'
     graph_to_cytoscape(project)
