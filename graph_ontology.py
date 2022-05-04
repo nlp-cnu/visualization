@@ -62,6 +62,6 @@ def graph_to_cytoscape(project_name):
 
 
 if __name__ == "__main__":
-    project = 'data/' + input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases): ")
+    project = '../research_data/' + input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases): ")
     #project = 'data/SNOMEDCT_US'
     graph_to_cytoscape(project)
