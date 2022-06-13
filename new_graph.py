@@ -21,6 +21,7 @@ def graph_to_cytoscape(project_name):
     nodes['font'] = nodes['size'].map(lambda x: 32767 if x / 3 > 32767 else x / 3)  # font sizes -> scale factor here
     #nodes.at[len(nodes['id'].tolist()) - 1, 'name'] = 'root'  # change name of root for clearness
     counter = -1
+    root_id = None
     root_index = 0
     for s in edges['source']:
         counter += 1
@@ -62,6 +63,6 @@ def graph_to_cytoscape(project_name):
 
 
 if __name__ == "__main__":
-    project = '../data/' + input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases): ")
+    project = 'sample_data/' + input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases): ")
     #project = 'data/SNOMEDCT_US'
     graph_to_cytoscape(project)
