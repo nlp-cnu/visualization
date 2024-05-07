@@ -16,15 +16,34 @@ def graph_to_cytoscape(project_name):
 
     start = time.time()  # tracking time for user purposes
 
-    # nodes = pd.read_csv(project_name + '_nodes.csv', sep='\t', quoting=csv.QUOTE_NONE)
+
+
+    line_num = 0
+    with open(project_name + '_nodes.csv', "r") as file:
+        for line in file:
+            if line_num==2784:
+                print(line)
+            if line_num==2785:
+                print(line)
+            if line_num==2786:
+                print(line)
+            line_num += 1
+    #exit()
+         
+
+    
+    nodes = pd.read_csv(project_name + '_nodes.csv', sep='\t', quoting=csv.QUOTE_NONE)
     # #
     # edges = pd.read_csv(project_name + '_edges.csv', sep='\t', quoting=csv.QUOTE_NONE)
 
 
 
-
+    # read the nodes file
     with open(project_name + '_nodes.csv', "r") as file:
+        # create the nodes dictionary
         nodes= {}
+
+        # read the label row (row the containing the labels for each column)
         titles = file.readline().strip('\n').split()
         nodes[titles[0]] = []
         nodes[titles[1]] = []
@@ -67,7 +86,6 @@ def graph_to_cytoscape(project_name):
         edges[titles[6]] = []
         reader = csv.reader(file, delimiter='\t',lineterminator='\n', quoting=csv.QUOTE_NONE)
         for row in reader:
-            if row[0] not in nodes
             edges.get(titles[0]).append(int(row[0]))
             edges.get("target").append(int(row[1]))
             edges.get(titles[2]).append(int(row[2]))
@@ -138,7 +156,7 @@ def graph_to_cytoscape(project_name):
 
 if __name__ == "__main__":
 
-    project = '../dailymed_interface/CSV_GraphData/' + input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases): ")
+    project = '../data/' + input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases): ")
     #project = 'data/SNOMEDCT_US'
     #project = '/home/kelsey/visualization/sample_data/'+ input("Please enter the name of your files without the extension, case sensitive. (ex - cardiacArrestDiseases):")
     graph_to_cytoscape(project)
