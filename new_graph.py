@@ -16,6 +16,7 @@ def graph_to_cytoscape(project_name):
 
     start = time.time()  # tracking time for user purposes
 
+<<<<<<< HEAD
 
 
     line_num = 0
@@ -32,9 +33,11 @@ def graph_to_cytoscape(project_name):
          
 
     
+=======
+>>>>>>> 71b54a2b8d88bef6a57100a25985bc9308a57ffc
     nodes = pd.read_csv(project_name + '_nodes.csv', sep='\t', quoting=csv.QUOTE_NONE)
     # #
-    # edges = pd.read_csv(project_name + '_edges.csv', sep='\t', quoting=csv.QUOTE_NONE)
+    edges = pd.read_csv(project_name + '_edges.csv', sep='\t', quoting=csv.QUOTE_NONE)
 
 
 
@@ -86,6 +89,10 @@ def graph_to_cytoscape(project_name):
         edges[titles[6]] = []
         reader = csv.reader(file, delimiter='\t',lineterminator='\n', quoting=csv.QUOTE_NONE)
         for row in reader:
+<<<<<<< HEAD
+=======
+            #if (int(row[0]) in nodes['id']) and (int(row[1]) in nodes['id']):
+>>>>>>> 71b54a2b8d88bef6a57100a25985bc9308a57ffc
             edges.get(titles[0]).append(int(row[0]))
             edges.get("target").append(int(row[1]))
             edges.get(titles[2]).append(int(row[2]))
@@ -93,6 +100,8 @@ def graph_to_cytoscape(project_name):
             edges.get(titles[4]).append(row[4])
             edges.get(titles[5]).append(row[5])
             edges.get(titles[6]).append(row[6])
+            #else:
+                #print(row[0], row[1])
 
             count += 1
 
